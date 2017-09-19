@@ -20,15 +20,23 @@ namespace ToDoFunctions
         public static ITelemetryClientFactory telemetryFactory = new TelemetryClientFactory();
 
         [FunctionName("GetAllToDos")]
-        public static HttpResponseMessage GetAllToDos([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos")]HttpRequestMessage req, [Table("todotable", Connection = "MyTable")]IQueryable<ToDoItem> inTable, TraceWriter log)
+        public static HttpResponseMessage GetAllToDos(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos")]HttpRequestMessage req, 
+            [Table("todotable", Connection = "MyTable")]IQueryable<ToDoItem> inTable, 
+            TraceWriter log)
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            var includeCompleted = !req.GetQueryNameValuePairs().Any(i => i.Key == "includecompleted" && i.Value == "false");
-            var includeActive = !req.GetQueryNameValuePairs().Any(i => i.Key == "includeactive" && i.Value == "false");
+
+            var includeCompleted = !req.GetQueryNameValuePairs()
+                                       .Any(i => i.Key == "includecompleted" && i.Value == "false");
+
+            var includeActive = !req.GetQueryNameValuePairs()
+                                    .Any(i => i.Key == "includeactive" && i.Value == "false");
 
             var items = inTable
-                .Where(p => (p.IsComplete == false || includeCompleted) && (p.IsComplete == true || includeActive)).ToList()
+                .Where(p => (p.IsComplete == false || includeCompleted) && (p.IsComplete == true || includeActive))
+                .ToList()
                 .Select(i => i.MapFromTableEntity()).ToList();
 
             stopWatch.Stop();
@@ -44,7 +52,11 @@ namespace ToDoFunctions
         }
 
         [FunctionName("GetToDo")]
-        public static HttpResponseMessage GetToDo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos/{id}")]HttpRequestMessage req, [Table("todotable", Connection = "MyTable")]CloudTable table, string id, TraceWriter log)
+        public static HttpResponseMessage GetToDo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/todos/{id}")]HttpRequestMessage req, 
+            [Table("todotable", Connection = "MyTable")]CloudTable table, 
+            string id, 
+            TraceWriter log)
         {
             Stopwatch stopWatch = new Stopwatch();
             var item = table.GetToDoFromTable( id);
@@ -66,8 +78,13 @@ namespace ToDoFunctions
         }
 
         [FunctionName("CreateToDo")]
-        public static async Task<HttpResponseMessage> CreateToDo([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/todos")]HttpRequestMessage req, [Table("todotable", Connection = "MyTable")]CloudTable table, TraceWriter log, ExecutionContext context)
-        { TelemetryClient telemetryClient = telemetryFactory.GetClient();
+        public static async Task<HttpResponseMessage> CreateToDo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/todos")]HttpRequestMessage req,
+            [Table("todotable", Connection = "MyTable")]CloudTable table, 
+            TraceWriter log, 
+            ExecutionContext context)
+        {
+            TelemetryClient telemetryClient = telemetryFactory.GetClient();
             try
             {
                 Stopwatch stopWatch = new Stopwatch();
@@ -83,7 +100,6 @@ namespace ToDoFunctions
                 var props = new Dictionary<string, string> {
                      { "todo-id", todo.id}
                 };
-
                
                 telemetryClient.TrackEvent("create-todo", metrics: metrics);
                 return req.CreateResponse(HttpStatusCode.Created, todo);
@@ -96,7 +112,11 @@ namespace ToDoFunctions
         }
 
         [FunctionName("UpdateToDo")]
-        public static async Task<HttpResponseMessage> UpdateToDo([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "api/todos/{id}")]HttpRequestMessage req, [Table("todotable", Connection = "MyTable")]CloudTable table, string id, TraceWriter log)
+        public static async Task<HttpResponseMessage> UpdateToDo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "api/todos/{id}")]HttpRequestMessage req, 
+            [Table("todotable", Connection = "MyTable")]CloudTable table, 
+            string id, 
+            TraceWriter log)
         {
             Stopwatch stopWatch = new Stopwatch();
 
@@ -125,7 +145,11 @@ namespace ToDoFunctions
         }
 
         [FunctionName("SetCompleteToDo")]
-        public static async Task<HttpResponseMessage> SetCompleteToDo([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "api/todos/{id}")]HttpRequestMessage req, [Table("todotable", Connection = "MyTable")]CloudTable table, string id, TraceWriter log)
+        public static async Task<HttpResponseMessage> SetCompleteToDo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "api/todos/{id}")]HttpRequestMessage req,
+            [Table("todotable", Connection = "MyTable")]CloudTable table, 
+            string id, 
+            TraceWriter log)
         {
             Stopwatch stopWatch = new Stopwatch();
             var json = await req.Content.ReadAsStringAsync();
@@ -152,7 +176,11 @@ namespace ToDoFunctions
         }
 
         [FunctionName("DeleteToDo")]
-        public static HttpResponseMessage DeleteToDo([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "api/todos/{id}")]HttpRequestMessage req, string id, [Table("todotable", Connection = "MyTable")]CloudTable table, TraceWriter log)
+        public static HttpResponseMessage DeleteToDo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "api/todos/{id}")]HttpRequestMessage req,
+            string id, 
+            [Table("todotable", Connection = "MyTable")]CloudTable table, 
+            TraceWriter log)
         {
             Stopwatch stopWatch = new Stopwatch();
             table.DeleteToDoFromTable( id);

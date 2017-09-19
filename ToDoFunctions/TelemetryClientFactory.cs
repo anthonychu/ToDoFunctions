@@ -6,15 +6,18 @@ namespace ToDoFunctions
 {
     public class TelemetryClientFactory : ITelemetryClientFactory
     {
+        private static TelemetryClient _client;
         public virtual TelemetryClient GetClient()
         {
-            string key = TelemetryConfiguration.Active.InstrumentationKey = System.Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", EnvironmentVariableTarget.Process);
-            TelemetryClient client = new TelemetryClient()
+            if (_client == null)
             {
-                InstrumentationKey = key
-            };
-
-            return client;
+                string key = TelemetryConfiguration.Active.InstrumentationKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", EnvironmentVariableTarget.Process);
+                _client = new TelemetryClient()
+                {
+                    InstrumentationKey = key
+                };
+            }
+            return _client;
         }
     }
 
