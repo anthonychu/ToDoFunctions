@@ -14,9 +14,7 @@ using Xunit;
 namespace ToDoFunctions.UnitTests
 {
     public class ToDoOperationsTests : IClassFixture<TestTelemetryClientFactory>
-    {
-      
-
+    {      
         public ToDoOperationsTests(TestTelemetryClientFactory telemetryClientFactory)
         {
 
@@ -48,7 +46,7 @@ namespace ToDoFunctions.UnitTests
             var resp = ToDoOperations.GetAllToDos(req, todos, tw.Object);
             var results = await resp.Content.ReadAsAsync<IEnumerable<ToDoItem>>();
 
-            Assert.Equal(1, results.Count());
+            Assert.Equal(todos.Count(), results.Count());
         }
 
         [Fact]
