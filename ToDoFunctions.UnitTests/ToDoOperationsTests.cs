@@ -48,7 +48,7 @@ namespace ToDoFunctions.UnitTests
             var resp = ToDoOperations.GetAllToDos(req, todos, tw.Object);
             var results = await resp.Content.ReadAsAsync<IEnumerable<ToDoItem>>();
 
-            Assert.Equal(todos.Count(), results.Count());
+            Assert.Equal(1, results.Count());
         }
 
         [Fact]
