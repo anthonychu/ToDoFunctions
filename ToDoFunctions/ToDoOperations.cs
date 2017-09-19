@@ -90,6 +90,11 @@ namespace ToDoFunctions
                 Stopwatch stopWatch = new Stopwatch();
                 var json = await req.Content.ReadAsStringAsync();
                 var todo = JsonConvert.DeserializeObject<ToDo>(json);
+
+                if (string.IsNullOrEmpty(todo.title)) {
+                    return req.CreateErrorResponse(HttpStatusCode.BadRequest, new HttpError("Required information missing."));
+                }
+
                 table.AddOrUpdateToDoToTable( todo);
                 stopWatch.Stop();
 
