@@ -1,8 +1,9 @@
 {
-    "IsEncrypted": false,
+  "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "",
     "AzureWebJobsDashboard": "",
-    "MyTable": "UseDevelopmentStorage=true"
+    "MyTable": "DefaultEndpointsProtocol=https;AccountName=dnctodos;AccountKey=fD/3aFxIsMhAQkfsWypMvpeSBvan63eKGKHc3im7xELO7O2kqOS51Bs1Clc0FyeZgISg/VR63ig/TuWrfshdWw==",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "e744cce8-8aa2-4315-a8d0-e60d911b621b"
   }
 }
